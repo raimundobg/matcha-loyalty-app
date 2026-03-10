@@ -1,8 +1,114 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { Resend } from "resend";
 
 const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const EMAIL_FROM = "MatchaLab <rai@zenlab.cl>";
+
+function emailLayout(content) {
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 520px; margin: 0 auto; background: #f8faf5; border-radius: 16px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #5a7a3a, #7a9f4a); padding: 32px 24px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 26px; letter-spacing: 0.5px;">MatchaLab</h1>
+        <p style="color: #e8f0d8; margin: 8px 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Programa de Embajadores</p>
+      </div>
+      <div style="padding: 32px 24px;">
+        ${content}
+      </div>
+      <div style="padding: 20px 24px; text-align: center; border-top: 1px solid #e4ecd4;">
+        <p style="color: #9aaa8a; font-size: 11px; margin: 0;">MatchaLab Santiago &mdash; Programa de Embajadores</p>
+        <p style="color: #b8c8a8; font-size: 10px; margin: 6px 0 0;">Este email fue enviado porque postulaste al programa de embajadores.</p>
+      </div>
+    </div>
+  `;
+}
+
+function approvalEmailHtml({ name, email, username, password, loginUrl }) {
+  const credentialsBlock = password
+    ? `
+      <div style="background: #fff; border: 1px solid #d4e4c4; border-radius: 12px; padding: 20px; margin: 0 0 24px;">
+        <p style="color: #4a5a3a; margin: 0 0 12px; font-size: 14px; font-weight: 600;">Tus credenciales de acceso:</p>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 6px 0; color: #7a8a6a; font-size: 13px; width: 100px;">Email:</td>
+            <td style="padding: 6px 0; color: #2d3a1e; font-weight: 600; font-size: 13px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #7a8a6a; font-size: 13px;">Usuario:</td>
+            <td style="padding: 6px 0; color: #2d3a1e; font-weight: 600; font-size: 13px;">${username}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #7a8a6a; font-size: 13px;">Contrase&ntilde;a:</td>
+            <td style="padding: 6px 0; color: #2d3a1e; font-weight: 600; font-size: 13px;">${password}</td>
+          </tr>
+        </table>
+      </div>
+      <p style="color: #7a8a6a; font-size: 12px; margin: 0 0 24px;">
+        Te recomendamos cambiar tu contrase&ntilde;a despu&eacute;s de iniciar sesi&oacute;n.
+      </p>
+    `
+    : `
+      <div style="background: #fff; border: 1px solid #d4e4c4; border-radius: 12px; padding: 20px; margin: 0 0 24px;">
+        <p style="color: #4a5a3a; margin: 0; font-size: 14px;">
+          Ya ten&iacute;as una cuenta en MatchaLab. Usa tus credenciales actuales para acceder a tu nuevo panel de embajador.
+        </p>
+      </div>
+    `;
+
+  return emailLayout(`
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="display: inline-block; background: #e8f5d0; border-radius: 50%; width: 56px; height: 56px; line-height: 56px; font-size: 28px;">&#127861;</div>
+    </div>
+    <h2 style="color: #2d3a1e; margin: 0 0 8px; font-size: 22px; text-align: center;">&iexcl;Felicidades, ${name}!</h2>
+    <p style="color: #5a7a3a; text-align: center; margin: 0 0 24px; font-size: 15px; font-weight: 600;">Tu postulaci&oacute;n ha sido aprobada</p>
+    <p style="color: #4a5a3a; line-height: 1.7; margin: 0 0 8px; font-size: 14px;">
+      Nos alegra mucho que quieras ser parte de nuestra comunidad. A partir de ahora eres oficialmente embajador/a de MatchaLab.
+    </p>
+    <p style="color: #4a5a3a; line-height: 1.7; margin: 0 0 24px; font-size: 14px;">
+      Ya puedes acceder a tu panel para generar c&oacute;digos de descuento exclusivos, compartirlos con tu comunidad y ganar comisiones por cada venta referida.
+    </p>
+    ${credentialsBlock}
+    <div style="text-align: center; margin-top: 8px;">
+      <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #5a7a3a, #7a9f4a); color: #fff; text-decoration: none; padding: 14px 36px; border-radius: 50px; font-weight: 600; font-size: 15px;">
+        Ir a mi panel de embajador
+      </a>
+    </div>
+    <p style="color: #9aaa8a; font-size: 12px; text-align: center; margin: 20px 0 0;">
+      &iquest;Dudas? Resp&oacute;ndenos a este email y te ayudamos.
+    </p>
+  `);
+}
+
+function rejectionEmailHtml({ name }) {
+  return emailLayout(`
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="display: inline-block; background: #f0ead8; border-radius: 50%; width: 56px; height: 56px; line-height: 56px; font-size: 28px;">&#128154;</div>
+    </div>
+    <h2 style="color: #2d3a1e; margin: 0 0 8px; font-size: 22px; text-align: center;">Hola, ${name}</h2>
+    <p style="color: #7a8a6a; text-align: center; margin: 0 0 24px; font-size: 15px; font-weight: 500;">Gracias por tu inter&eacute;s en nuestro programa</p>
+    <p style="color: #4a5a3a; line-height: 1.7; margin: 0 0 16px; font-size: 14px;">
+      Antes que nada, queremos agradecerte por tomarte el tiempo de postular al programa de embajadores de MatchaLab. Nos encanta ver personas apasionadas que quieren ser parte de nuestra comunidad.
+    </p>
+    <p style="color: #4a5a3a; line-height: 1.7; margin: 0 0 16px; font-size: 14px;">
+      Lamentablemente, en esta oportunidad no pudimos aprobar tu postulaci&oacute;n. Esto no significa un &ldquo;no&rdquo; definitivo &mdash; nuestro programa evoluciona constantemente y siempre estamos buscando nuevas caras.
+    </p>
+    <p style="color: #4a5a3a; line-height: 1.7; margin: 0 0 24px; font-size: 14px;">
+      <strong style="color: #5a7a3a;">No te desanimes.</strong> Contamos contigo siempre como parte de la familia MatchaLab. Te invitamos a seguir disfrutando de nuestros productos y a volver a postular m&aacute;s adelante.
+    </p>
+    <div style="background: #fff; border: 1px solid #e4ecd4; border-radius: 12px; padding: 20px; margin: 0 0 24px; text-align: center;">
+      <p style="color: #5a7a3a; margin: 0 0 4px; font-size: 14px; font-weight: 600;">&#128140; Mientras tanto...</p>
+      <p style="color: #4a5a3a; margin: 0; font-size: 13px; line-height: 1.6;">
+        S&iacute;guenos en Instagram para estar al tanto de futuras convocatorias y novedades.
+      </p>
+    </div>
+    <p style="color: #9aaa8a; font-size: 12px; text-align: center; margin: 0;">
+      Con cari&ntilde;o, el equipo de MatchaLab &#127811;
+    </p>
+  `);
+}
 
 // Simple admin auth via ADMIN_SECRET env var
 function checkAdmin(req, res) {
@@ -145,6 +251,28 @@ export async function approveApplication(req, res) {
       data: { status: "approved", reviewedAt: new Date() },
     });
 
+    // Send welcome email to the new ambassador
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const loginUrl = `${frontendUrl}/login`;
+
+    try {
+      await resend.emails.send({
+        from: EMAIL_FROM,
+        to: [application.email],
+        subject: "Bienvenido al equipo de embajadores de MatchaLab",
+        html: approvalEmailHtml({
+          name: application.name,
+          email: user.email,
+          username: user.username,
+          password: generatedPassword,
+          loginUrl,
+        }),
+      });
+      console.log(`Welcome email sent to ${application.email}`);
+    } catch (emailErr) {
+      console.error("Failed to send welcome email:", emailErr);
+    }
+
     res.json({
       message: "Embajador aprobado y cuenta creada",
       credentials: {
@@ -153,9 +281,10 @@ export async function approveApplication(req, res) {
         password: generatedPassword || "(usuario existente, usa su contraseña actual)",
       },
       ambassador,
+      emailSent: true,
       note: generatedPassword
-        ? "Envía estas credenciales al embajador por email o Instagram"
-        : "El usuario ya tenía cuenta. Solo se le asignó rol de embajador.",
+        ? "Credenciales enviadas por email al embajador"
+        : "El usuario ya tenía cuenta. Se le notificó por email.",
     });
   } catch (err) {
     console.error("ApproveApplication error:", err);
@@ -232,7 +361,20 @@ export async function rejectApplication(req, res) {
       data: { status: "rejected", reviewedAt: new Date() },
     });
 
-    res.json({ message: "Postulación rechazada", application });
+    // Send rejection email
+    try {
+      await resend.emails.send({
+        from: EMAIL_FROM,
+        to: [application.email],
+        subject: "Actualización sobre tu postulación - MatchaLab",
+        html: rejectionEmailHtml({ name: application.name }),
+      });
+      console.log(`Rejection email sent to ${application.email}`);
+    } catch (emailErr) {
+      console.error("Failed to send rejection email:", emailErr);
+    }
+
+    res.json({ message: "Postulación rechazada", application, emailSent: true });
   } catch (err) {
     console.error("RejectApplication error:", err);
     res.status(500).json({ error: "Error al rechazar postulación" });
