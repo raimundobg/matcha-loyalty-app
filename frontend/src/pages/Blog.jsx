@@ -26,8 +26,8 @@ export default function Blog() {
               to={`/blog/${post.id}`}
               className="group flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden border border-matcha-100 hover:shadow-lg transition-all"
             >
-              <div className="md:w-72 h-48 md:h-auto bg-gradient-to-br from-matcha-200 to-matcha-400 flex-shrink-0 flex items-center justify-center">
-                <MatchaIcon size={56} className="opacity-30 group-hover:scale-110 transition-transform" />
+              <div className="md:w-72 h-48 md:h-auto flex-shrink-0 overflow-hidden">
+                <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               </div>
               <div className="p-4 sm:p-6 flex flex-col justify-center">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">

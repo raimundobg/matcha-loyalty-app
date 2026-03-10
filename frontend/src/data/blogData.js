@@ -6,7 +6,7 @@ export const blogPosts = [
     category: "Energía & Bienestar",
     date: "12 Feb 2026",
     readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=800&q=80",
+    image: "/barista.png",
     content: [
       {
         type: "heading",
@@ -96,7 +96,7 @@ export const blogPosts = [
     category: "Bienestar",
     date: "10 Feb 2026",
     readTime: "7 min",
-    image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=800&q=80",
+    image: "/matchateam.png",
     content: [
       {
         type: "heading",
@@ -197,7 +197,7 @@ export const blogPosts = [
     category: "Sustentabilidad",
     date: "8 Feb 2026",
     readTime: "8 min",
-    image: "https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=800&q=80",
+    image: "/escazes-matcha.png",
     content: [
       {
         type: "heading",

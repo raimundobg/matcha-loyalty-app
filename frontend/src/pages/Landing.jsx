@@ -180,17 +180,17 @@ export default function Landing() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { title: "Energía Sostenida sin el Crash del Café", cat: "Energía & Bienestar", time: "5 min", slug: "matcha-energia-sostenida" },
-              { title: "Cómo el Matcha está Cambiando el Bienestar en Chile", cat: "Bienestar", time: "7 min", slug: "matcha-bienestar-chile" },
-              { title: "Escasez Mundial de Matcha y Sustentabilidad", cat: "Sustentabilidad", time: "8 min", slug: "escasez-matcha-sustentabilidad" },
+              { title: "Energía Sostenida sin el Crash del Café", cat: "Energía & Bienestar", time: "5 min", slug: "matcha-energia-sostenida", img: "/barista.png" },
+              { title: "Cómo el Matcha está Cambiando el Bienestar en Chile", cat: "Bienestar", time: "7 min", slug: "matcha-bienestar-chile", img: "/matchateam.png" },
+              { title: "Escasez Mundial de Matcha y Sustentabilidad", cat: "Sustentabilidad", time: "8 min", slug: "escasez-matcha-sustentabilidad", img: "/escazes-matcha.png" },
             ].map((post, i) => (
               <Link
                 key={i}
                 to={`/blog/${post.slug}`}
                 className="group bg-cream rounded-2xl overflow-hidden border border-matcha-100 hover:shadow-lg transition-all"
               >
-                <div className="h-40 bg-gradient-to-br from-matcha-200 to-matcha-400 flex items-center justify-center">
-                  <MatchaIcon size={48} className="opacity-30 group-hover:scale-110 transition-transform" />
+                <div className="h-40 overflow-hidden">
+                  <img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-5">
                   <span className="text-xs font-medium text-matcha-600 bg-matcha-100 px-2.5 py-1 rounded-full">

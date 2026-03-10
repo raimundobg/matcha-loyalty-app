@@ -92,7 +92,8 @@ export default function BlogPost() {
   return (
     <div className="bg-cream min-h-screen">
       {/* Header Image */}
-      <div className="w-full h-64 md:h-80 bg-gradient-to-br from-matcha-300 to-matcha-600 relative">
+      <div className="w-full h-64 md:h-80 relative overflow-hidden">
+        <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
