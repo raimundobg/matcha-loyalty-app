@@ -7,8 +7,8 @@ self.addEventListener("push", (event) => {
     const data = event.data.json();
     const options = {
       body: data.body || "Tienes novedades en MatchaLab",
-      icon: data.icon || "/matcha-icon-192.png",
-      badge: data.badge || "/matcha-icon-192.png",
+      icon: data.icon || "/matcha-icon-192.svg",
+      badge: data.badge || "/matcha-icon-192.svg",
       vibrate: [200, 100, 200],
       data: data.data || { url: "/" },
       actions: [
