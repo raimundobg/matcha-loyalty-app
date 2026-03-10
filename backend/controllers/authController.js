@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import { Resend } from "resend";
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function register(req, res) {
   try {
@@ -149,8 +149,11 @@ export async function forgotPassword(req, res) {
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     // Send reset email via Resend
+    if (!resend) {
+      console.log(`[PASSWORD RESET] Resend not configured. Link: ${resetUrl}`);
+    }
     try {
-      await resend.emails.send({
+      if (resend) await resend.emails.send({
         from: "MatchaLab <rai@zenlab.cl>",
         to: email,
         subject: "Recupera tu contraseña - MatchaLab",
