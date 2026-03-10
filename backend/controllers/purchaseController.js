@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import Tesseract from "tesseract.js";
+import crypto from "crypto";
 import path from "path";
 
 const prisma = new PrismaClient();
@@ -32,17 +33,41 @@ const PRODUCT_KEYWORDS = [
 // Valid price patterns to extract from receipt
 const VALID_PRICES = [3490, 4990];
 
+// Reusable Tesseract scheduler for faster OCR
+let scheduler = null;
+
+async function getScheduler() {
+  if (scheduler) return scheduler;
+  scheduler = Tesseract.createScheduler();
+  const worker = await Tesseract.createWorker("spa");
+  scheduler.addWorker(worker);
+  return scheduler;
+}
+
+/**
+ * Generate a hash from OCR text to detect duplicate receipts.
+ * We normalize the text (lowercase, remove extra spaces) before hashing.
+ */
+function generateReceiptHash(rawText) {
+  const normalized = rawText
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim()
+    .substring(0, 1000); // Use first 1000 chars for hash
+  return crypto.createHash("sha256").update(normalized).digest("hex");
+}
+
 /**
  * Runs OCR on the uploaded voucher image and validates it's from Fresherb SpA.
- * Returns { valid, companyMatch, productMatch, amount, rawText }
+ * Returns { valid, companyMatch, productMatch, amount, rawText, receiptHash }
  */
 async function validateReceipt(imagePath) {
   try {
-    const { data } = await Tesseract.recognize(imagePath, "spa", {
-      logger: () => {},
-    });
+    const ocr = await getScheduler();
+    const { data } = await ocr.addJob("recognize", imagePath);
 
     const text = data.text.toLowerCase();
+    const receiptHash = generateReceiptHash(data.text);
 
     // 1. Check if receipt is from Fresherb SpA
     const companyMatch = COMPANY_IDENTIFIERS.some((id) => text.includes(id));
@@ -51,7 +76,6 @@ async function validateReceipt(imagePath) {
     const productMatch = PRODUCT_KEYWORDS.some((p) => text.includes(p));
 
     // 3. Try to extract a price amount from the text
-    // Look for patterns like $3.490, 3490, $4.990, 4990, etc.
     let amount = null;
     const pricePatterns = [
       /\$?\s*4[\.\,]?990/g,
@@ -63,7 +87,6 @@ async function validateReceipt(imagePath) {
 
     for (const pattern of pricePatterns) {
       if (pattern.test(text)) {
-        // Extract the first matched price number
         const match = text.match(pattern);
         if (match) {
           const cleaned = match[0].replace(/[\$\s\.\,]/g, "");
@@ -73,15 +96,15 @@ async function validateReceipt(imagePath) {
       }
     }
 
-    // If we matched the company, it's valid (even without price extraction)
     const valid = companyMatch;
 
     return {
       valid,
       companyMatch,
       productMatch,
-      amount: amount || (companyMatch ? 4990 : null), // Default to 4990 if company matches but price not extracted
-      rawText: data.text.substring(0, 500), // Keep first 500 chars for debugging
+      amount: amount || (companyMatch ? 4990 : null),
+      rawText: data.text.substring(0, 500),
+      receiptHash,
     };
   } catch (err) {
     console.error("OCR error:", err);
@@ -91,6 +114,7 @@ async function validateReceipt(imagePath) {
       productMatch: false,
       amount: null,
       rawText: "",
+      receiptHash: null,
       error: err.message,
     };
   }
@@ -126,6 +150,18 @@ export async function createPurchase(req, res) {
       });
     }
 
+    // Check for duplicate receipt using hash
+    if (ocrResult.receiptHash) {
+      const existingPurchase = await prisma.purchase.findUnique({
+        where: { receiptHash: ocrResult.receiptHash },
+      });
+      if (existingPurchase) {
+        return res.status(400).json({
+          error: "Esta boleta ya fue registrada anteriormente. Cada boleta solo puede usarse una vez.",
+        });
+      }
+    }
+
     // Check for discount code (ambassador referral)
     const discountCodeStr = req.body?.discountCode?.toUpperCase?.() || null;
     let appliedDiscount = null;
@@ -146,6 +182,7 @@ export async function createPurchase(req, res) {
         voucherImageUrl: imageUrl,
         amount: ocrResult.amount,
         status: "approved",
+        receiptHash: ocrResult.receiptHash,
       },
     });
 
