@@ -10,6 +10,7 @@ import purchaseRoutes from "./routes/purchases.js";
 import ticketRoutes from "./routes/tickets.js";
 import geofenceRoutes from "./routes/geofence.js";
 import ambassadorRoutes from "./routes/ambassadors.js";
+import adminRoutes from "./routes/admin.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/purchases", purchaseRoutes);
 app.use("/tickets", ticketRoutes);
 app.use("/geofence", geofenceRoutes);
 app.use("/ambassadors", ambassadorRoutes);
+app.use("/admin", adminRoutes);
 // Alias /user/me
 app.get("/user/me", (req, res, next) => {
   req.url = "/auth/me";

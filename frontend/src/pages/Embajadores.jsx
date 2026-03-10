@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
+import { applicationAPI } from "../services/api";
 
 export default function Embajadores() {
   const { user } = useAuth();
@@ -22,14 +23,16 @@ export default function Embajadores() {
     e.preventDefault();
     setSending(true);
     try {
-      const subject = encodeURIComponent(`Postulación Embajador: ${form.nombre}`);
-      const body = encodeURIComponent(
-        `Nombre: ${form.nombre}\nEmail: ${form.email}\nInstagram: ${form.instagram}\nSeguidores: ${form.seguidores}\n\nMensaje:\n${form.mensaje}`
-      );
-      window.open(`mailto:rai@zenlab.cl?subject=${subject}&body=${body}`, "_self");
+      await applicationAPI.submit({
+        name: form.nombre,
+        email: form.email,
+        instagram: form.instagram,
+        followers: form.seguidores,
+        message: form.mensaje,
+      });
       setSubmitted(true);
-    } catch {
-      setSubmitted(true);
+    } catch (err) {
+      alert(err.response?.data?.error || "Error al enviar postulación. Intenta de nuevo.");
     } finally {
       setSending(false);
     }

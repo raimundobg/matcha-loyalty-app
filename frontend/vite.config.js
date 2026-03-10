@@ -12,6 +12,7 @@ export default defineConfig({
       "/uploads": "http://localhost:3000",
       "/geofence": "http://localhost:3000",
       "/ambassadors": "http://localhost:3000",
+      "/admin": "http://localhost:3000",
     },
   },
   build: {

@@ -71,6 +71,20 @@ model PushSubscription {
   @@map("push_subscriptions")
 }
 
+model AmbassadorApplication {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  instagram   String
+  followers   String?
+  message     String?
+  status      String   @default("pending") // pending, approved, rejected
+  createdAt   DateTime @default(now()) @map("created_at")
+  reviewedAt  DateTime? @map("reviewed_at")
+
+  @@map("ambassador_applications")
+}
+
 model Ambassador {
   id            String         @id @default(uuid())
   userId        String         @unique @map("user_id")

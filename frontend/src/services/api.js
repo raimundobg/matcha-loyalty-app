@@ -56,4 +56,8 @@ export const ambassadorAPI = {
   validateCode: (code) => api.get(`/ambassadors/codes/validate/${code}`),
 };
 
+export const applicationAPI = {
+  submit: (data) => api.post("/admin/applications", data),
+};
+
 export default api;
