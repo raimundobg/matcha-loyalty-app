@@ -1,0 +1,24 @@
+{
+  "name": "MatchaLab Rewards",
+  "short_name": "MatchaLab",
+  "description": "Tu programa de fidelidad MatchaLab. Compra 3 matchas y el 4to es gratis.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f5ef",
+  "theme_color": "#65a30d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/matcha-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/matcha-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

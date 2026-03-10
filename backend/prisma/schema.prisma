@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  username           String             @unique
+  passwordHash       String             @map("password_hash")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  lastGeofenceNotify DateTime?          @map("last_geofence_notify")
+  purchases          Purchase[]
+  tickets            Ticket[]
+  rewards            Reward[]
+  pushSubscriptions  PushSubscription[]
+  ambassador         Ambassador?
+
+  @@map("users")
+}
+
+model Purchase {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  voucherImageUrl String   @map("voucher_image_url")
+  amount          Int?     @map("amount")
+  status          String   @default("approved")
+  createdAt       DateTime @default(now()) @map("created_at")
+  user            User         @relation(fields: [userId], references: [id])
+  ticket          Ticket?
+  commissions     Commission[]
+
+  @@map("purchases")
+}
+
+model Ticket {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  purchaseId String   @unique @map("purchase_id")
+  redeemed   Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+
+  @@map("tickets")
+}
+
+model Reward {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  redeemedAt  DateTime @default(now()) @map("redeemed_at")
+  ticketsUsed Int      @default(3) @map("tickets_used")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("rewards")
+}
+
+model PushSubscription {
+  id       String @id @default(uuid())
+  userId   String @map("user_id")
+  endpoint String @unique
+  p256dh   String
+  auth     String
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@map("push_subscriptions")
+}
+
+model Ambassador {
+  id            String         @id @default(uuid())
+  userId        String         @unique @map("user_id")
+  name          String
+  instagram     String?
+  phone         String?
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  user          User           @relation(fields: [userId], references: [id])
+  discountCodes DiscountCode[]
+  commissions   Commission[]
+
+  @@map("ambassadors")
+}
+
+model DiscountCode {
+  id             String       @id @default(uuid())
+  ambassadorId   String       @map("ambassador_id")
+  code           String       @unique
+  discountPercent Int         @default(10) @map("discount_percent")
+  active         Boolean      @default(true)
+  timesUsed      Int          @default(0) @map("times_used")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  ambassador     Ambassador   @relation(fields: [ambassadorId], references: [id])
+  commissions    Commission[]
+
+  @@map("discount_codes")
+}
+
+model Commission {
+  id             String       @id @default(uuid())
+  ambassadorId   String       @map("ambassador_id")
+  discountCodeId String       @map("discount_code_id")
+  purchaseId     String       @map("purchase_id")
+  saleAmount     Int          @map("sale_amount")
+  commissionRate Float        @default(0.15) @map("commission_rate")
+  commissionAmount Int        @map("commission_amount")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  ambassador     Ambassador   @relation(fields: [ambassadorId], references: [id])
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id])
+  purchase       Purchase     @relation(fields: [purchaseId], references: [id])
+
+  @@map("commissions")
+}
