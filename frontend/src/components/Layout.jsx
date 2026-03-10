@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import MatchaIcon from "./MatchaIcon";
+import InstallBanner from "./InstallBanner";
 
 const navLinks = [
   { to: "/blog", label: "Blog" },
@@ -143,62 +144,65 @@ export default function Layout({ children }) {
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-dark text-white">
+      <footer className="bg-matcha-50 border-t border-matcha-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <MatchaIcon size={28} />
-                <span className="font-display text-xl font-bold italic text-matcha-400">MatchaLab</span>
+                <span className="font-display text-xl font-bold italic text-matcha-700">MatchaLab</span>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <p className="text-matcha-500 text-sm leading-relaxed">
                 El mejor matcha japonés premium de Chile. Matcha enlatado listo para llevar, bar de matcha y coworking gratuito en Taller 1, Providencia.
               </p>
             </div>
 
             {/* Nav */}
             <div>
-              <h4 className="font-semibold text-matcha-400 text-sm uppercase tracking-wider mb-4">Navegación</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/" className="hover:text-matcha-400 transition-colors">Productos</Link></li>
-                <li><Link to="/" className="hover:text-matcha-400 transition-colors">Nuestro Matcha</Link></li>
-                <li><Link to="/" className="hover:text-matcha-400 transition-colors">Beneficios</Link></li>
-                <li><Link to="/" className="hover:text-matcha-400 transition-colors">Delivery</Link></li>
+              <h4 className="font-semibold text-matcha-700 text-sm uppercase tracking-wider mb-4">Navegación</h4>
+              <ul className="space-y-2 text-sm text-matcha-500">
+                <li><Link to="/" className="hover:text-matcha-700 transition-colors">Productos</Link></li>
+                <li><Link to="/" className="hover:text-matcha-700 transition-colors">Nuestro Matcha</Link></li>
+                <li><Link to="/" className="hover:text-matcha-700 transition-colors">Beneficios</Link></li>
+                <li><Link to="/" className="hover:text-matcha-700 transition-colors">Delivery</Link></li>
               </ul>
             </div>
 
             {/* More */}
             <div>
-              <h4 className="font-semibold text-matcha-400 text-sm uppercase tracking-wider mb-4">Más</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/blog" className="hover:text-matcha-400 transition-colors">Blog</Link></li>
-                <li><Link to="/embajadores" className="hover:text-matcha-400 transition-colors">Embajadores</Link></li>
-                <li><Link to="/" className="hover:text-matcha-400 transition-colors">Contacto</Link></li>
+              <h4 className="font-semibold text-matcha-700 text-sm uppercase tracking-wider mb-4">Más</h4>
+              <ul className="space-y-2 text-sm text-matcha-500">
+                <li><Link to="/blog" className="hover:text-matcha-700 transition-colors">Blog</Link></li>
+                <li><Link to="/embajadores" className="hover:text-matcha-700 transition-colors">Embajadores</Link></li>
+                <li><Link to="/" className="hover:text-matcha-700 transition-colors">Contacto</Link></li>
               </ul>
             </div>
 
             {/* Contact */}
             <div>
-              <h4 className="font-semibold text-matcha-400 text-sm uppercase tracking-wider mb-4">Encuéntranos</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="font-semibold text-matcha-700 text-sm uppercase tracking-wider mb-4">Encuéntranos</h4>
+              <ul className="space-y-2 text-sm text-matcha-500">
                 <li>General Salvo 20, Taller 1</li>
                 <li>Providencia, Santiago, Chile</li>
                 <li className="pt-2">
-                  <a href="mailto:rai@zenlab.cl" className="hover:text-matcha-400 transition-colors">rai@zenlab.cl</a>
+                  <a href="mailto:rai@zenlab.cl" className="hover:text-matcha-700 transition-colors">rai@zenlab.cl</a>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-8 sm:mt-10 pt-6 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-            <p className="text-xs text-gray-500">
+          <div className="mt-8 sm:mt-10 pt-6 border-t border-matcha-200 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <p className="text-xs text-matcha-400">
               &copy; {new Date().getFullYear()} MatchaLab by ZenLab. Todos los derechos reservados.
             </p>
-            <p className="text-sm font-semibold text-matcha-500">#MatchaToGo</p>
+            <p className="text-sm font-semibold text-matcha-600">#MatchaToGo</p>
           </div>
         </div>
       </footer>
+
+      {/* PWA Install Banner */}
+      <InstallBanner />
     </div>
   );
 }
