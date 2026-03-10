@@ -10,6 +10,8 @@ import BlogPost from "./pages/BlogPost";
 import Embajadores from "./pages/Embajadores";
 import AmbassadorDashboard from "./pages/AmbassadorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
   return (
@@ -26,6 +28,8 @@ export default function App() {
             <Route path="/embajadores" element={<Embajadores />} />
             <Route path="/embajadores/dashboard" element={<AmbassadorDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
         </Layout>
       </AuthProvider>

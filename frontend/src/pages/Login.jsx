@@ -24,7 +24,7 @@ export default function Login() {
     try {
       const { data } = await authAPI.login(form);
       login({ ...data.user, ticketCount: data.ticketCount }, data.token);
-      navigate("/dashboard");
+      navigate(data.user.isAmbassador ? "/embajadores/dashboard" : "/dashboard");
     } catch (err) {
       setError(err.response?.data?.error || "Error al iniciar sesión");
     } finally {
@@ -94,7 +94,11 @@ export default function Login() {
         </button>
       </form>
 
-      <p className="mt-6 text-matcha-500 text-sm">
+      <Link to="/forgot-password" className="mt-4 text-matcha-500 text-sm hover:text-matcha-700 transition-colors">
+        ¿Olvidaste tu contraseña?
+      </Link>
+
+      <p className="mt-3 text-matcha-500 text-sm">
         ¿No tienes cuenta?{" "}
         <Link to="/register" className="text-matcha-700 font-semibold hover:underline">
           Regístrate

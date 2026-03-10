@@ -238,3 +238,37 @@ export async function rejectApplication(req, res) {
     res.status(500).json({ error: "Error al rechazar postulación" });
   }
 }
+
+// POST /admin/reset-password - Generate reset link for any user (admin only)
+export async function adminResetPassword(req, res) {
+  if (!checkAdmin(req, res)) return;
+
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email es obligatorio" });
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExp = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h for admin-generated
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken, resetTokenExp },
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+    res.json({
+      message: "Link de recuperación generado",
+      resetUrl,
+      email: user.email,
+      expiresIn: "24 horas",
+    });
+  } catch (err) {
+    console.error("AdminResetPassword error:", err);
+    res.status(500).json({ error: "Error al generar link de reset" });
+  }
+}

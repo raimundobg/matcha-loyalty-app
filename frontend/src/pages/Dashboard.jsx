@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { purchaseAPI, ticketAPI } from "../services/api";
 import TicketDisplay from "../components/TicketDisplay";
@@ -254,6 +254,22 @@ export default function Dashboard() {
 
       {/* Proximity notification */}
       <ProximityBanner info={proximityInfo} />
+
+      {/* Ambassador link */}
+      {user?.isAmbassador && (
+        <div className="mt-6 bg-matcha-50 border border-matcha-200 rounded-2xl p-4 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-matcha-900 font-semibold text-sm">Eres embajador</p>
+            <p className="text-matcha-500 text-xs mt-0.5">Gestiona tus codigos y comisiones.</p>
+          </div>
+          <Link
+            to="/embajadores/dashboard"
+            className="bg-matcha-600 hover:bg-matcha-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+          >
+            Mi Panel
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

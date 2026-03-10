@@ -33,6 +33,8 @@ export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
   getMe: () => api.get("/auth/me"),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
+  resetPassword: (token, password) => api.post("/auth/reset-password", { token, password }),
 };
 
 export const purchaseAPI = {
@@ -76,6 +78,10 @@ export const adminAPI = {
     }),
   listAmbassadors: () =>
     api.get("/admin/ambassadors", {
+      headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
+    }),
+  resetPassword: (email) =>
+    api.post("/admin/reset-password", { email }, {
       headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
     }),
 };

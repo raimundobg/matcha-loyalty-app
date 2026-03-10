@@ -5,6 +5,7 @@ import {
   approveApplication,
   rejectApplication,
   listAmbassadors,
+  adminResetPassword,
 } from "../controllers/adminController.js";
 
 const router = Router();
@@ -17,5 +18,6 @@ router.get("/applications", listApplications);
 router.post("/applications/:id/approve", approveApplication);
 router.post("/applications/:id/reject", rejectApplication);
 router.get("/ambassadors", listAmbassadors);
+router.post("/reset-password", adminResetPassword);
 
 export default router;
