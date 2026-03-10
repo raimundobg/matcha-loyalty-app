@@ -2,8 +2,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
+import { Resend } from "resend";
 
 const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function register(req, res) {
   try {
@@ -146,8 +148,41 @@ export async function forgotPassword(req, res) {
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-    // Log the reset URL (admin can see this in Railway logs)
-    console.log(`[PASSWORD RESET] User: ${email} | Link: ${resetUrl}`);
+    // Send reset email via Resend
+    try {
+      await resend.emails.send({
+        from: "MatchaLab <rai@zenlab.cl>",
+        to: email,
+        subject: "Recupera tu contraseña - MatchaLab",
+        html: `
+          <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;background:#fafaf5;border-radius:16px;overflow:hidden;border:1px solid #e8e6d9">
+            <div style="background:#4a7c59;padding:28px 24px;text-align:center">
+              <h1 style="color:#fff;margin:0;font-size:22px;letter-spacing:1px">🍵 MatchaLab</h1>
+            </div>
+            <div style="padding:32px 24px;text-align:center">
+              <h2 style="color:#2d2d2d;font-size:20px;margin:0 0 12px">Recuperar contraseña</h2>
+              <p style="color:#666;font-size:14px;line-height:1.6;margin:0 0 24px">
+                Hiciste una solicitud para restablecer tu contraseña. Haz clic en el botón para crear una nueva.
+              </p>
+              <a href="${resetUrl}" style="display:inline-block;background:#4a7c59;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:bold;font-size:14px">
+                Restablecer contraseña
+              </a>
+              <p style="color:#999;font-size:12px;margin:24px 0 0;line-height:1.5">
+                Este enlace expira en 1 hora.<br>Si no solicitaste esto, ignora este correo.
+              </p>
+            </div>
+            <div style="background:#f0efe6;padding:16px;text-align:center">
+              <p style="color:#999;font-size:11px;margin:0">MatchaLab · Santiago, Chile</p>
+            </div>
+          </div>
+        `,
+      });
+      console.log(`[PASSWORD RESET] Email sent to: ${email}`);
+    } catch (emailErr) {
+      console.error("[PASSWORD RESET] Email failed:", emailErr);
+      // Still log the URL as fallback
+      console.log(`[PASSWORD RESET] Fallback link for ${email}: ${resetUrl}`);
+    }
 
     res.json({ message: "Si el email existe, recibirás instrucciones para recuperar tu contraseña." });
   } catch (err) {
