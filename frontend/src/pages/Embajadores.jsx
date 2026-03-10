@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 export default function Embajadores() {
+  const { user } = useAuth();
   const [form, setForm] = useState({
     nombre: "",
     email: "",
@@ -9,34 +12,63 @@ export default function Embajadores() {
     mensaje: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSending(true);
+    try {
+      const subject = encodeURIComponent(`Postulación Embajador: ${form.nombre}`);
+      const body = encodeURIComponent(
+        `Nombre: ${form.nombre}\nEmail: ${form.email}\nInstagram: ${form.instagram}\nSeguidores: ${form.seguidores}\n\nMensaje:\n${form.mensaje}`
+      );
+      window.open(`mailto:rai@zenlab.cl?subject=${subject}&body=${body}`, "_self");
+      setSubmitted(true);
+    } catch {
+      setSubmitted(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
-    <div className="bg-dark min-h-screen">
+    <div className="bg-cream min-h-screen">
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 md:py-24">
+        {/* Ambassador dashboard link for logged-in users */}
+        {user && (
+          <div className="mb-8 bg-matcha-50 border border-matcha-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <p className="text-matcha-900 font-semibold text-sm">¿Ya eres embajador?</p>
+              <p className="text-matcha-600 text-xs mt-0.5">Accede a tu panel para gestionar códigos y ver comisiones.</p>
+            </div>
+            <Link
+              to="/embajadores/dashboard"
+              className="bg-matcha-600 hover:bg-matcha-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+            >
+              Mi Panel de Embajador
+            </Link>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
           {/* Left - Info */}
           <div className="space-y-6 sm:space-y-8">
             <div>
-              <span className="inline-flex items-center gap-2 text-matcha-400 text-sm font-semibold bg-matcha-400/10 px-4 py-2 rounded-full mb-6">
+              <span className="inline-flex items-center gap-2 text-matcha-700 text-sm font-semibold bg-matcha-100 px-4 py-2 rounded-full mb-6">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
                 Programa Embajadores
               </span>
-              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-white leading-tight">
+              <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-matcha-950 leading-tight">
                 Sé un{" "}
-                <span className="text-matcha-400 italic">Embajador</span>
+                <span className="text-matcha-600 italic">Embajador</span>
               </h1>
-              <p className="text-gray-400 text-base sm:text-lg mt-3 sm:mt-4 leading-relaxed max-w-md">
+              <p className="text-matcha-600 text-base sm:text-lg mt-3 sm:mt-4 leading-relaxed max-w-md">
                 ¿Eres influencer o creador de contenido? Únete a nuestra comunidad de embajadores y colabora con la marca de matcha más innovadora de Chile.
               </p>
             </div>
@@ -79,44 +111,44 @@ export default function Embajadores() {
                     </svg>
                   ),
                   title: "Comisiones",
-                  desc: "Gana por cada venta",
+                  desc: "15% neto por venta",
                 },
               ].map((benefit, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 hover:bg-white/10 transition-colors"
+                  className="bg-white border border-matcha-100 rounded-xl p-4 sm:p-5 hover:shadow-md transition-all"
                 >
-                  <div className="text-matcha-400 mb-3">{benefit.icon}</div>
-                  <h3 className="text-white font-semibold text-sm">{benefit.title}</h3>
-                  <p className="text-gray-500 text-xs mt-1">{benefit.desc}</p>
+                  <div className="text-matcha-600 mb-3">{benefit.icon}</div>
+                  <h3 className="text-matcha-900 font-semibold text-sm">{benefit.title}</h3>
+                  <p className="text-matcha-500 text-xs mt-1">{benefit.desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Right - Form */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+          <div className="bg-white border border-matcha-100 rounded-2xl p-6 sm:p-8 shadow-sm">
             {submitted ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-matcha-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-matcha-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                <div className="w-16 h-16 bg-matcha-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-matcha-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>
-                <h3 className="text-white font-display text-2xl mb-2">Postulación enviada</h3>
-                <p className="text-gray-400">Te contactaremos en 48 horas. Gracias por tu interés.</p>
+                <h3 className="text-matcha-900 font-display text-2xl mb-2">Postulación enviada</h3>
+                <p className="text-matcha-600">Te contactaremos en 48 horas. Gracias por tu interés.</p>
               </div>
             ) : (
               <>
-                <h2 className="font-display text-2xl text-white mb-2">Postula como Embajador</h2>
-                <p className="text-gray-400 text-sm mb-6">
+                <h2 className="font-display text-2xl text-matcha-900 mb-2">Postula como Embajador</h2>
+                <p className="text-matcha-500 text-sm mb-6">
                   Completa el formulario y nos pondremos en contacto contigo.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1.5">
-                      Tu nombre completo <span className="text-matcha-400">*</span>
+                    <label className="block text-sm text-matcha-700 mb-1.5">
+                      Tu nombre completo <span className="text-matcha-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -125,13 +157,13 @@ export default function Embajadores() {
                       value={form.nombre}
                       onChange={handleChange}
                       placeholder="Tu nombre completo"
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600 transition-colors"
+                      className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1.5">
-                      Tu correo electrónico <span className="text-matcha-400">*</span>
+                    <label className="block text-sm text-matcha-700 mb-1.5">
+                      Tu correo electrónico <span className="text-matcha-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -140,13 +172,13 @@ export default function Embajadores() {
                       value={form.email}
                       onChange={handleChange}
                       placeholder="Tu correo electrónico"
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600 transition-colors"
+                      className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1.5">
-                      Tu Instagram <span className="text-matcha-400">*</span>
+                    <label className="block text-sm text-matcha-700 mb-1.5">
+                      Tu Instagram <span className="text-matcha-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -155,12 +187,12 @@ export default function Embajadores() {
                       value={form.instagram}
                       onChange={handleChange}
                       placeholder="@tu_usuario"
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600 transition-colors"
+                      className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1.5">
+                    <label className="block text-sm text-matcha-700 mb-1.5">
                       Cantidad de seguidores
                     </label>
                     <input
@@ -169,12 +201,12 @@ export default function Embajadores() {
                       value={form.seguidores}
                       onChange={handleChange}
                       placeholder="ej: 5,000"
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600 transition-colors"
+                      className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1.5">
+                    <label className="block text-sm text-matcha-700 mb-1.5">
                       ¿Por qué quieres ser embajador?
                     </label>
                     <textarea
@@ -183,18 +215,19 @@ export default function Embajadores() {
                       value={form.mensaje}
                       onChange={handleChange}
                       placeholder="Cuéntanos sobre ti, tu contenido y por qué te apasiona el matcha..."
-                      className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600 transition-colors resize-none"
+                      className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300 transition-colors resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-matcha-500 hover:bg-matcha-600 text-white font-bold py-4 rounded-xl transition-colors text-base mt-2"
+                    disabled={sending}
+                    className="w-full bg-matcha-600 hover:bg-matcha-700 disabled:bg-matcha-300 text-white font-bold py-4 rounded-xl transition-colors text-base mt-2"
                   >
-                    Enviar Postulación
+                    {sending ? "Enviando..." : "Enviar Postulación"}
                   </button>
 
-                  <p className="text-center text-gray-500 text-xs mt-3">
+                  <p className="text-center text-matcha-400 text-xs mt-3">
                     *Revisamos todas las postulaciones. Te contactaremos en 48 horas.
                   </p>
                 </form>

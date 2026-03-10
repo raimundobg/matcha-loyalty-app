@@ -86,8 +86,8 @@ export default function AmbassadorDashboard() {
 
   if (loading) {
     return (
-      <div className="bg-dark min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-matcha-400 border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center py-20">
+        <div className="w-10 h-10 border-4 border-matcha-200 border-t-matcha-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -95,51 +95,51 @@ export default function AmbassadorDashboard() {
   // Registration form for non-ambassadors
   if (notAmbassador) {
     return (
-      <div className="bg-dark min-h-screen">
+      <div className="bg-cream min-h-screen">
         <div className="max-w-md mx-auto px-4 py-16">
-          <h1 className="font-display text-3xl text-white mb-2 text-center">
-            Activa tu cuenta de <span className="text-matcha-400 italic">Embajador</span>
+          <h1 className="font-display text-3xl text-matcha-950 mb-2 text-center">
+            Activa tu cuenta de <span className="text-matcha-600 italic">Embajador</span>
           </h1>
-          <p className="text-gray-400 text-center text-sm mb-8">
+          <p className="text-matcha-500 text-center text-sm mb-8">
             Registra tus datos para empezar a generar códigos y ganar comisiones.
           </p>
 
-          <form onSubmit={handleRegister} className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+          <form onSubmit={handleRegister} className="bg-white border border-matcha-100 rounded-2xl p-6 space-y-4 shadow-sm">
             <div>
-              <label className="block text-sm text-gray-300 mb-1.5">Nombre</label>
+              <label className="block text-sm text-matcha-700 mb-1.5">Nombre</label>
               <input
                 type="text"
                 required
                 value={regForm.name}
                 onChange={(e) => setRegForm((p) => ({ ...p, name: e.target.value }))}
                 placeholder="Tu nombre"
-                className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600"
+                className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-300 mb-1.5">Instagram (opcional)</label>
+              <label className="block text-sm text-matcha-700 mb-1.5">Instagram (opcional)</label>
               <input
                 type="text"
                 value={regForm.instagram}
                 onChange={(e) => setRegForm((p) => ({ ...p, instagram: e.target.value }))}
                 placeholder="@tu_usuario"
-                className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600"
+                className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-300 mb-1.5">Teléfono (opcional)</label>
+              <label className="block text-sm text-matcha-700 mb-1.5">Teléfono (opcional)</label>
               <input
                 type="text"
                 value={regForm.phone}
                 onChange={(e) => setRegForm((p) => ({ ...p, phone: e.target.value }))}
                 placeholder="+56 9 ..."
-                className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-400 focus:ring-1 focus:ring-matcha-400 placeholder-gray-600"
+                className="w-full bg-matcha-50/50 border border-matcha-200 text-matcha-900 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500 placeholder-matcha-300"
               />
             </div>
             <button
               type="submit"
               disabled={registering}
-              className="w-full bg-matcha-500 hover:bg-matcha-600 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-colors"
+              className="w-full bg-matcha-600 hover:bg-matcha-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-colors"
             >
               {registering ? "Registrando..." : "Activar cuenta embajador"}
             </button>
@@ -152,18 +152,18 @@ export default function AmbassadorDashboard() {
   const { ambassador, codes, commissions, stats } = dashboard;
 
   return (
-    <div className="bg-dark min-h-screen">
+    <div className="bg-cream min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-16">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div>
-            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-white">
-              Hola, <span className="text-matcha-400 italic">{ambassador.name}</span>
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-matcha-950">
+              Hola, <span className="text-matcha-600 italic">{ambassador.name}</span>
             </h1>
-            <p className="text-gray-400 text-sm mt-1">Panel de embajador MatchaLab</p>
+            <p className="text-matcha-500 text-sm mt-1">Panel de embajador MatchaLab</p>
           </div>
           {ambassador.instagram && (
-            <span className="text-matcha-400 text-sm font-medium bg-matcha-400/10 px-3 py-1.5 rounded-full hidden sm:inline">
+            <span className="text-matcha-700 text-sm font-medium bg-matcha-100 px-3 py-1.5 rounded-full hidden sm:inline">
               {ambassador.instagram}
             </span>
           )}
@@ -171,38 +171,38 @@ export default function AmbassadorDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5">
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Comisión total</p>
-            <p className="text-matcha-400 text-2xl font-bold">{formatCLP(stats.totalCommission)}</p>
-            <p className="text-gray-500 text-xs mt-1">15% neto por venta referida</p>
+          <div className="bg-white border border-matcha-100 rounded-xl p-4 sm:p-5 shadow-sm">
+            <p className="text-matcha-500 text-xs uppercase tracking-wider mb-1">Comisión total</p>
+            <p className="text-matcha-700 text-2xl font-bold">{formatCLP(stats.totalCommission)}</p>
+            <p className="text-matcha-400 text-xs mt-1">15% neto por venta referida</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Ventas referidas</p>
-            <p className="text-white text-2xl font-bold">{stats.totalReferrals}</p>
-            <p className="text-gray-500 text-xs mt-1">compras con tu código</p>
+          <div className="bg-white border border-matcha-100 rounded-xl p-4 sm:p-5 shadow-sm">
+            <p className="text-matcha-500 text-xs uppercase tracking-wider mb-1">Ventas referidas</p>
+            <p className="text-matcha-900 text-2xl font-bold">{stats.totalReferrals}</p>
+            <p className="text-matcha-400 text-xs mt-1">compras con tu código</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Usos totales</p>
-            <p className="text-white text-2xl font-bold">{stats.totalCodesUsed}</p>
-            <p className="text-gray-500 text-xs mt-1">veces se usaron tus códigos</p>
+          <div className="bg-white border border-matcha-100 rounded-xl p-4 sm:p-5 shadow-sm">
+            <p className="text-matcha-500 text-xs uppercase tracking-wider mb-1">Usos totales</p>
+            <p className="text-matcha-900 text-2xl font-bold">{stats.totalCodesUsed}</p>
+            <p className="text-matcha-400 text-xs mt-1">veces se usaron tus códigos</p>
           </div>
         </div>
 
         {/* Discount Codes */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="bg-white border border-matcha-100 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-white font-semibold text-base sm:text-lg">Mis códigos de descuento</h2>
+            <h2 className="text-matcha-900 font-semibold text-base sm:text-lg">Mis códigos de descuento</h2>
             <button
               onClick={handleGenerateCode}
               disabled={generating}
-              className="bg-matcha-500 hover:bg-matcha-600 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+              className="bg-matcha-600 hover:bg-matcha-700 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
             >
               {generating ? "Generando..." : "+ Nuevo código"}
             </button>
           </div>
 
           {codes.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-6">
+            <p className="text-matcha-400 text-sm text-center py-6">
               Aún no tienes códigos. Genera tu primer código de descuento.
             </p>
           ) : (
@@ -212,26 +212,26 @@ export default function AmbassadorDashboard() {
                   key={dc.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-xl border gap-2 sm:gap-0 ${
                     dc.active
-                      ? "bg-matcha-500/5 border-matcha-500/20"
-                      : "bg-white/3 border-white/5 opacity-60"
+                      ? "bg-matcha-50 border-matcha-200"
+                      : "bg-gray-50 border-gray-200 opacity-60"
                   }`}
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <span className="font-mono text-matcha-400 font-bold text-xs sm:text-sm tracking-wider">
+                    <span className="font-mono text-matcha-700 font-bold text-xs sm:text-sm tracking-wider">
                       {dc.code}
                     </span>
-                    <span className="text-gray-500 text-[10px] sm:text-xs">
+                    <span className="text-matcha-400 text-[10px] sm:text-xs">
                       {dc.discountPercent}% desc · {dc.timesUsed} usos
                     </span>
                   </div>
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <button
                       onClick={() => copyCode(dc.code)}
-                      className="text-gray-400 hover:text-matcha-400 transition-colors p-1.5"
+                      className="text-matcha-400 hover:text-matcha-600 transition-colors p-1.5"
                       title="Copiar código"
                     >
                       {copied === dc.code ? (
-                        <svg className="w-4 h-4 text-matcha-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <svg className="w-4 h-4 text-matcha-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
                       ) : (
@@ -244,8 +244,8 @@ export default function AmbassadorDashboard() {
                       onClick={() => handleToggleCode(dc.id)}
                       className={`text-xs font-medium px-3 py-1 rounded-full transition-colors ${
                         dc.active
-                          ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                          : "bg-matcha-500/10 text-matcha-400 hover:bg-matcha-500/20"
+                          ? "bg-red-50 text-red-500 hover:bg-red-100 border border-red-200"
+                          : "bg-matcha-50 text-matcha-600 hover:bg-matcha-100 border border-matcha-200"
                       }`}
                     >
                       {dc.active ? "Desactivar" : "Activar"}
@@ -258,18 +258,18 @@ export default function AmbassadorDashboard() {
         </div>
 
         {/* Recent Commissions */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6">
-          <h2 className="text-white font-semibold text-base sm:text-lg mb-4 sm:mb-5">Historial de comisiones</h2>
+        <div className="bg-white border border-matcha-100 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <h2 className="text-matcha-900 font-semibold text-base sm:text-lg mb-4 sm:mb-5">Historial de comisiones</h2>
 
           {commissions.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-6">
+            <p className="text-matcha-400 text-sm text-center py-6">
               Aún no tienes comisiones. Comparte tus códigos para empezar a ganar.
             </p>
           ) : (
             <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
               <table className="w-full text-xs sm:text-sm min-w-[360px]">
                 <thead>
-                  <tr className="text-gray-400 text-xs uppercase tracking-wider border-b border-white/10">
+                  <tr className="text-matcha-500 text-xs uppercase tracking-wider border-b border-matcha-100">
                     <th className="text-left pb-3 font-medium">Fecha</th>
                     <th className="text-left pb-3 font-medium">Código</th>
                     <th className="text-right pb-3 font-medium">Venta</th>
@@ -278,15 +278,15 @@ export default function AmbassadorDashboard() {
                 </thead>
                 <tbody>
                   {commissions.map((c) => (
-                    <tr key={c.id} className="border-b border-white/5">
-                      <td className="py-3 text-gray-300">
+                    <tr key={c.id} className="border-b border-matcha-50">
+                      <td className="py-3 text-matcha-700">
                         {new Date(c.createdAt).toLocaleDateString("es-CL")}
                       </td>
                       <td className="py-3">
-                        <span className="font-mono text-matcha-400 text-xs">{c.discountCode.code}</span>
+                        <span className="font-mono text-matcha-600 text-xs">{c.discountCode.code}</span>
                       </td>
-                      <td className="py-3 text-right text-gray-300">{formatCLP(c.saleAmount)}</td>
-                      <td className="py-3 text-right text-matcha-400 font-semibold">
+                      <td className="py-3 text-right text-matcha-700">{formatCLP(c.saleAmount)}</td>
+                      <td className="py-3 text-right text-matcha-700 font-semibold">
                         {formatCLP(c.commissionAmount)}
                       </td>
                     </tr>
