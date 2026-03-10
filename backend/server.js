@@ -11,6 +11,7 @@ import ticketRoutes from "./routes/tickets.js";
 import geofenceRoutes from "./routes/geofence.js";
 import ambassadorRoutes from "./routes/ambassadors.js";
 import adminRoutes from "./routes/admin.js";
+import discountRoutes from "./routes/discount.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/tickets", ticketRoutes);
 app.use("/geofence", geofenceRoutes);
 app.use("/ambassadors", ambassadorRoutes);
 app.use("/admin", adminRoutes);
+app.use("/discount", discountRoutes);
 // Alias /user/me
 app.get("/user/me", (req, res, next) => {
   req.url = "/auth/me";

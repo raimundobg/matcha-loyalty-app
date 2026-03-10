@@ -21,6 +21,7 @@ model User {
   rewards            Reward[]
   pushSubscriptions  PushSubscription[]
   ambassador         Ambassador?
+  discountVouchers   DiscountVoucher[]
 
   @@map("users")
 }
@@ -110,10 +111,26 @@ model DiscountCode {
   active         Boolean      @default(true)
   timesUsed      Int          @default(0) @map("times_used")
   createdAt      DateTime     @default(now()) @map("created_at")
-  ambassador     Ambassador   @relation(fields: [ambassadorId], references: [id])
+  ambassador     Ambassador       @relation(fields: [ambassadorId], references: [id])
   commissions    Commission[]
+  vouchers       DiscountVoucher[]
 
   @@map("discount_codes")
+}
+
+model DiscountVoucher {
+  id             String       @id @default(uuid())
+  userId         String?      @map("user_id")
+  discountCodeId String       @map("discount_code_id")
+  discountPercent Int         @map("discount_percent")
+  activatedAt    DateTime     @default(now()) @map("activated_at")
+  expiresAt      DateTime     @map("expires_at")
+  used           Boolean      @default(false)
+  usedAt         DateTime?    @map("used_at")
+  user           User?        @relation(fields: [userId], references: [id])
+  discountCode   DiscountCode @relation(fields: [discountCodeId], references: [id])
+
+  @@map("discount_vouchers")
 }
 
 model Commission {

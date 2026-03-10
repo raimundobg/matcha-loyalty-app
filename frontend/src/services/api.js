@@ -58,6 +58,11 @@ export const ambassadorAPI = {
   validateCode: (code) => api.get(`/ambassadors/codes/validate/${code}`),
 };
 
+export const discountAPI = {
+  activate: (code) => api.post("/discount/activate", { code }),
+  getVoucher: (id) => api.get(`/discount/voucher/${id}`),
+};
+
 export const applicationAPI = {
   submit: (data) => api.post("/admin/applications", data),
 };

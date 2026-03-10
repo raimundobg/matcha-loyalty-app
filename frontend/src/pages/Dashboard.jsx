@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { purchaseAPI, ticketAPI } from "../services/api";
+import { purchaseAPI, ticketAPI, discountAPI } from "../services/api";
 import TicketDisplay from "../components/TicketDisplay";
 import MatchaIcon from "../components/MatchaIcon";
 import ProximityBanner from "../components/ProximityBanner";
@@ -18,6 +18,9 @@ export default function Dashboard() {
   const [message, setMessage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [discountCode, setDiscountCode] = useState("");
+  const [activatingCode, setActivatingCode] = useState(false);
+  const [activeVoucher, setActiveVoucher] = useState(null);
   const proximityInfo = useGeofence(user);
 
   useEffect(() => {
@@ -95,6 +98,35 @@ export default function Dashboard() {
     }
   };
 
+  const handleActivateDiscount = async (e) => {
+    e.preventDefault();
+    if (!discountCode.trim()) return;
+    setActivatingCode(true);
+    try {
+      const { data } = await discountAPI.activate(discountCode.trim());
+      setActiveVoucher(data.voucher);
+      setDiscountCode("");
+    } catch (err) {
+      showMessage(err.response?.data?.error || "Código inválido", "error");
+    } finally {
+      setActivatingCode(false);
+    }
+  };
+
+  // Voucher countdown
+  useEffect(() => {
+    if (!activeVoucher) return;
+    const interval = setInterval(() => {
+      const now = new Date();
+      const expires = new Date(activeVoucher.expiresAt);
+      if (now >= expires) {
+        setActiveVoucher(null);
+        showMessage("Tu voucher ha expirado", "error");
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [activeVoucher]);
+
   if (authLoading || loadingData) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -152,6 +184,101 @@ export default function Dashboard() {
             <TicketDisplay count={ticketCount} max={3} />
           </div>
         </div>
+      </div>
+
+      {/* Active Voucher Fullscreen */}
+      {activeVoucher && (
+        <div className="fixed inset-0 z-50 bg-gradient-to-br from-matcha-700 via-matcha-600 to-matcha-800 flex flex-col items-center justify-center p-6">
+          <button
+            onClick={() => setActiveVoucher(null)}
+            className="absolute top-4 right-4 w-10 h-10 bg-white/20 text-white rounded-full flex items-center justify-center text-lg hover:bg-white/30"
+          >
+            ✕
+          </button>
+
+          <div className="text-center text-white mb-6">
+            <p className="text-matcha-200 text-xs font-medium tracking-widest uppercase mb-1">MatchaLab</p>
+            <h2 className="font-display text-2xl font-bold">Voucher de Descuento</h2>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-matcha-100 rounded-full mb-3">
+                <span className="text-3xl">🍵</span>
+              </div>
+              <p className="text-5xl font-display font-bold text-matcha-700">
+                {activeVoucher.discountPercent}%
+              </p>
+              <p className="text-matcha-500 text-sm font-medium mt-1">de descuento</p>
+            </div>
+
+            <div className="bg-matcha-50 rounded-2xl p-4 space-y-2 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-matcha-500">Código</span>
+                <span className="font-bold text-matcha-900 font-mono">{activeVoucher.code}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-matcha-500">Embajador</span>
+                <span className="font-semibold text-matcha-800">{activeVoucher.ambassadorName}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-matcha-500">Activado</span>
+                <span className="font-medium text-matcha-800">
+                  {new Date(activeVoucher.activatedAt).toLocaleString("es-CL", {
+                    day: "2-digit", month: "2-digit", year: "numeric",
+                    hour: "2-digit", minute: "2-digit", second: "2-digit",
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-matcha-500">Válido hasta</span>
+                <span className="font-medium text-matcha-800">
+                  {new Date(activeVoucher.expiresAt).toLocaleTimeString("es-CL", {
+                    hour: "2-digit", minute: "2-digit",
+                  })}
+                </span>
+              </div>
+            </div>
+
+            <VoucherCountdown expiresAt={activeVoucher.expiresAt} />
+
+            <div className="mt-4 text-center">
+              <p className="text-matcha-400 text-[11px]">
+                ID: {activeVoucher.id.slice(0, 8).toUpperCase()}
+              </p>
+            </div>
+          </div>
+
+          <p className="text-matcha-200 text-xs mt-6 text-center max-w-xs">
+            Muestra esta pantalla al personal de MatchaLab para aplicar tu descuento
+          </p>
+        </div>
+      )}
+
+      {/* Discount Code Input */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-matcha-100">
+        <h2 className="font-display text-lg text-matcha-900 mb-1 font-bold">
+          Código de descuento
+        </h2>
+        <p className="text-matcha-500 text-xs mb-4">
+          Ingresa un código de embajador para obtener 10% de descuento
+        </p>
+        <form onSubmit={handleActivateDiscount} className="flex gap-2">
+          <input
+            type="text"
+            value={discountCode}
+            onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+            placeholder="MATCHA-XXXXXX"
+            className="flex-1 px-4 py-3 bg-matcha-50 border-2 border-matcha-100 rounded-xl focus:border-matcha-400 focus:outline-none transition-colors text-matcha-900 placeholder:text-matcha-300 font-mono text-sm"
+          />
+          <button
+            type="submit"
+            disabled={activatingCode || !discountCode.trim()}
+            className="bg-matcha-600 hover:bg-matcha-700 disabled:bg-matcha-300 text-white font-semibold px-5 py-3 rounded-xl transition-all active:scale-[0.98] whitespace-nowrap text-sm"
+          >
+            {activatingCode ? "..." : "Activar"}
+          </button>
+        </form>
       </div>
 
       {/* Upload voucher */}
@@ -270,6 +397,41 @@ export default function Dashboard() {
           </Link>
         </div>
       )}
+    </div>
+  );
+}
+
+function VoucherCountdown({ expiresAt }) {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const expires = new Date(expiresAt);
+      const diff = expires - now;
+      if (diff <= 0) {
+        setTimeLeft("Expirado");
+        return;
+      }
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${mins}:${secs.toString().padStart(2, "0")}`);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  const expired = timeLeft === "Expirado";
+
+  return (
+    <div className={`text-center py-3 rounded-xl ${expired ? "bg-red-50" : "bg-matcha-50"}`}>
+      <p className={`text-xs font-medium ${expired ? "text-red-400" : "text-matcha-400"}`}>
+        Tiempo restante
+      </p>
+      <p className={`text-2xl font-bold font-mono ${expired ? "text-red-600" : "text-matcha-700"}`}>
+        {timeLeft}
+      </p>
     </div>
   );
 }
