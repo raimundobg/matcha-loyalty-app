@@ -163,6 +163,63 @@ export async function approveApplication(req, res) {
   }
 }
 
+// GET /admin/ambassadors - List all ambassadors with full metrics (admin only)
+export async function listAmbassadors(req, res) {
+  if (!checkAdmin(req, res)) return;
+
+  try {
+    const ambassadors = await prisma.ambassador.findMany({
+      include: {
+        user: { select: { email: true, username: true } },
+        discountCodes: {
+          select: { id: true, code: true, active: true, timesUsed: true, discountPercent: true },
+        },
+        commissions: {
+          select: { saleAmount: true, commissionAmount: true, createdAt: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const result = ambassadors.map((amb) => {
+      const totalRevenue = amb.commissions.reduce((sum, c) => sum + c.saleAmount, 0);
+      const totalCommission = amb.commissions.reduce((sum, c) => sum + c.commissionAmount, 0);
+      const totalCodesUsed = amb.discountCodes.reduce((sum, dc) => sum + dc.timesUsed, 0);
+      return {
+        id: amb.id,
+        name: amb.name,
+        instagram: amb.instagram,
+        phone: amb.phone,
+        active: amb.active,
+        createdAt: amb.createdAt,
+        email: amb.user.email,
+        username: amb.user.username,
+        codes: amb.discountCodes,
+        stats: {
+          totalRevenue,
+          totalCommission,
+          totalReferrals: amb.commissions.length,
+          totalCodesUsed,
+          activeCodes: amb.discountCodes.filter((dc) => dc.active).length,
+        },
+      };
+    });
+
+    // Global stats
+    const globalStats = {
+      totalAmbassadors: ambassadors.length,
+      totalRevenue: result.reduce((s, a) => s + a.stats.totalRevenue, 0),
+      totalCommissions: result.reduce((s, a) => s + a.stats.totalCommission, 0),
+      totalReferrals: result.reduce((s, a) => s + a.stats.totalReferrals, 0),
+    };
+
+    res.json({ ambassadors: result, globalStats });
+  } catch (err) {
+    console.error("ListAmbassadors error:", err);
+    res.status(500).json({ error: "Error al listar embajadores" });
+  }
+}
+
 // POST /admin/applications/:id/reject
 export async function rejectApplication(req, res) {
   if (!checkAdmin(req, res)) return;

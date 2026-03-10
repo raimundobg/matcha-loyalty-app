@@ -20,7 +20,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && !err.config?.headers?.["x-admin-secret"]) {
       localStorage.removeItem("matcha_token");
       localStorage.removeItem("matcha_user");
       window.location.href = "/login";
@@ -58,6 +58,26 @@ export const ambassadorAPI = {
 
 export const applicationAPI = {
   submit: (data) => api.post("/admin/applications", data),
+};
+
+export const adminAPI = {
+  listApplications: (status) =>
+    api.get("/admin/applications", {
+      params: status ? { status } : {},
+      headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
+    }),
+  approve: (id) =>
+    api.post(`/admin/applications/${id}/approve`, {}, {
+      headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
+    }),
+  reject: (id) =>
+    api.post(`/admin/applications/${id}/reject`, {}, {
+      headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
+    }),
+  listAmbassadors: () =>
+    api.get("/admin/ambassadors", {
+      headers: { "x-admin-secret": localStorage.getItem("matcha_admin_secret") },
+    }),
 };
 
 export default api;

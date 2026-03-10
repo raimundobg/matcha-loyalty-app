@@ -4,6 +4,7 @@ import {
   listApplications,
   approveApplication,
   rejectApplication,
+  listAmbassadors,
 } from "../controllers/adminController.js";
 
 const router = Router();
@@ -15,5 +16,6 @@ router.post("/applications", submitApplication);
 router.get("/applications", listApplications);
 router.post("/applications/:id/approve", approveApplication);
 router.post("/applications/:id/reject", rejectApplication);
+router.get("/ambassadors", listAmbassadors);
 
 export default router;

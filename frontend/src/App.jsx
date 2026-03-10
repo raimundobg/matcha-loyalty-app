@@ -9,6 +9,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Embajadores from "./pages/Embajadores";
 import AmbassadorDashboard from "./pages/AmbassadorDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/embajadores" element={<Embajadores />} />
             <Route path="/embajadores/dashboard" element={<AmbassadorDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Layout>
       </AuthProvider>
