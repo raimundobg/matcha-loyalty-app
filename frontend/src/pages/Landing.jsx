@@ -153,16 +153,14 @@ export default function Landing() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="col-span-2 h-48 sm:h-64 rounded-2xl bg-matcha-200 flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-matcha-300 to-matcha-500 flex items-center justify-center">
-                  <MatchaIcon size={80} className="opacity-50" />
-                </div>
+              <div className="col-span-2 h-48 sm:h-64 rounded-2xl overflow-hidden">
+                <img src="/matcha_uber_eats_cover.jpg" alt="MatchaLab en Uber Eats" className="w-full h-full object-cover" />
               </div>
-              <div className="h-28 sm:h-40 rounded-2xl bg-matcha-300 flex items-center justify-center">
-                <MatchaIcon size={48} className="opacity-40" />
+              <div className="h-28 sm:h-40 rounded-2xl overflow-hidden">
+                <img src="/matchatogo.png" alt="Matcha To Go" className="w-full h-full object-cover" />
               </div>
-              <div className="h-28 sm:h-40 rounded-2xl bg-matcha-100 flex items-center justify-center">
-                <MatchaIcon size={48} className="opacity-40" />
+              <div className="h-28 sm:h-40 rounded-2xl overflow-hidden">
+                <img src="/matchawhisk.png" alt="Matcha Whisk" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
