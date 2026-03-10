@@ -151,11 +151,13 @@ export async function forgotPassword(req, res) {
     // Send reset email via Resend
     if (!resend) {
       console.log(`[PASSWORD RESET] Resend not configured. Link: ${resetUrl}`);
+    } else {
+      console.log(`[PASSWORD RESET] Attempting to send email to: ${email}`);
     }
     try {
       if (resend) await resend.emails.send({
         from: "MatchaLab <rai@zenlab.cl>",
-        to: email,
+        to: [email],
         subject: "Recupera tu contraseña - MatchaLab",
         html: `
           <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;background:#fafaf5;border-radius:16px;overflow:hidden;border:1px solid #e8e6d9">
